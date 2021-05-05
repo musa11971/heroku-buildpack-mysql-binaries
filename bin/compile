@@ -1,29 +1,35 @@
 #!/usr/bin/env bash
 
-# Get the desired version from the environment
-MYSQL_BINARIES_VERSION=${MYSQL_BINARIES_VERSION:-0}
-
-if [ $MYSQL_BINARIES_VERSION = "0" ]; then
-   echo "-----> MySQL binaries could not be installed."
-   echo "       MYSQL_BINARIES_VERSION not found in environment!"
-   exit 1
-fi
-
-
-echo "-----> Installing MySQL $MYSQL_BINARIES_VERSION binaries"
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
+# Convenience functions
+source $BP_DIR/bin/util/common.sh
+
+# Get the desired version from the environment
+export_env_dir "$ENV_DIR" '^MYSQL_BINARIES_VERSION$'
+
+if [[ -n ${MYSQL_BINARIES_VERSION:-} ]]; then
+	echo "-----> Installing MySQL $MYSQL_BINARIES_VERSION binaries"
+else
+   echo "-----> MySQL binaries could not be installed."
+   echo "       MYSQL_BINARIES_VERSION not found in environment!"
+   exit 1
+fi
+
+# Create directories
 mkdir -p $BUILD_DIR/.heroku/vendor
 mkdir mysql-binaries
 
+# Download binary files
 echo "       Downloading binary files..."
 
 curl -L https://github.com/musa11971/heroku-buildpack-mysql-binaries/releases/download/0.0/${MYSQL_BINARIES_VERSION}.tar.gz | tar zxv -C mysql-binaries --strip-components=1
 cp -R mysql-binaries/ $BUILD_DIR/.heroku/vendor/mysql-binaries/
 
+# Write export files
 echo "       Writing export file in $BP_DIR..."
 
 echo "export PATH=\"\$PATH:$BUILD_DIR/.heroku/vendor/mysql-binaries/bin\"" > $BP_DIR/export
