@@ -24,9 +24,12 @@ mkdir -p $BUILD_DIR/.heroku/vendor
 mkdir mysql-binaries
 
 # Download binary files
-echo "       Downloading binary files..."
+BINARIES_DOWNLOAD_URL="https://github.com/musa11971/heroku-buildpack-mysql-binaries/releases/download/0.0/${MYSQL_BINARIES_VERSION}.tar.gz"
 
-curl -L https://github.com/musa11971/heroku-buildpack-mysql-binaries/releases/download/0.0/${MYSQL_BINARIES_VERSION}.tar.gz | tar zxv -C mysql-binaries --strip-components=1
+echo "       Downloading binary files..."
+echo "       from: $BINARIES_DOWNLOAD_URL"
+
+curl -L $BINARIES_DOWNLOAD_URL | tar zxv -C mysql-binaries --strip-components=1
 cp -R mysql-binaries/ $BUILD_DIR/.heroku/vendor/mysql-binaries/
 
 # Write export files
