@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
-echo "-----> Installing MySQL 8.0.23 binaries"
+
+# Get the desired version from the environment
+MYSQL_BINARIES_VERSION=${MYSQL_BINARIES_VERSION:-0}
+
+if [ $1 = "0" ]; then
+   echo "-----> MySQL binaries could not be installed."
+   echo "       MYSQL_BINARIES_VERSION not found in environment!"
+   exit 1
+fi
+
+
+echo "-----> Installing MySQL $MYSQL_BINARIES_VERSION binaries"
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
@@ -10,7 +21,7 @@ mkdir mysql-binaries
 
 echo "       Downloading binary files..."
 
-curl -L https://github.com/musa11971/heroku-buildpack-mysql-binaries/releases/download/0.0/8.0.23.tar.gz | tar zxv -C mysql-binaries --strip-components=1
+curl -L https://github.com/musa11971/heroku-buildpack-mysql-binaries/releases/download/0.0/${MYSQL_BINARIES_VERSION}.tar.gz | tar zxv -C mysql-binaries --strip-components=1
 cp -R mysql-binaries/ $BUILD_DIR/.heroku/vendor/mysql-binaries/
 
 echo "       Writing export file in $BP_DIR..."
