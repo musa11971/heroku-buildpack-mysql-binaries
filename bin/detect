@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo "MySQL"
+exit 0

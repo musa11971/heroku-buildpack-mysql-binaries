@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+echo "-----> Installing MySQL 8.0.23 binaries"
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+
+mkdir -p $BUILD_DIR/.heroku/vendor
+mkdir mysql-binaries
+
+echo "       Downloading binary files..."
+
+curl -L https://github.com/musa11971/heroku-buildpack-mysql-binaries/releases/download/0.0/8.0.23.tar.gz | tar zxv -C mysql-binaries --strip-components=1
+cp -R mysql-binaries/ $BUILD_DIR/.heroku/vendor/mysql-binaries/
+
+echo "       Writing export file in $BP_DIR..."
+
+echo "export PATH=\"\$PATH:$BUILD_DIR/.heroku/vendor/mysql-binaries/bin\"" > $BP_DIR/export
+echo "export LD_LIBRARY_PATH=\"\$LIBRARY_PATH:$BUILD_DIR/.heroku/vendor/mysql-binaries/lib\"" >> $BP_DIR/export
+echo "export LIBRARY_PATH=\"\$LIBRARY_PATH:$BUILD_DIR/.heroku/vendor/mysql-binaries/lib\"" >> $BP_DIR/export
+
+echo "       Writing PATH to profile.d directory..."
+
+mkdir -p $BUILD_DIR/.profile.d
+echo "export PATH=\$HOME/.heroku/vendor/mysql-binaries/bin:\$PATH" > $BUILD_DIR/.profile.d/mysql-binaries.sh
+echo "export LD_LIBRARY_PATH=\$LIBRARY_PATH:\$HOME/.heroku/vendor/mysql-binaries/lib" >> $BUILD_DIR/.profile.d/mysql-binaries.sh
+echo "export LIBRARY_PATH=\$LIBRARY_PATH:\$HOME/.heroku/vendor/mysql-binaries/lib" >> $BUILD_DIR/.profile.d/mysql-binaries.sh
