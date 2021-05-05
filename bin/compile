@@ -3,7 +3,7 @@
 # Get the desired version from the environment
 MYSQL_BINARIES_VERSION=${MYSQL_BINARIES_VERSION:-0}
 
-if [ $1 = "0" ]; then
+if [ $MYSQL_BINARIES_VERSION = "0" ]; then
    echo "-----> MySQL binaries could not be installed."
    echo "       MYSQL_BINARIES_VERSION not found in environment!"
    exit 1
